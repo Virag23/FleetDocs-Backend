@@ -7,3 +7,4 @@ python-jose
 boto3
 twilio
 python-multipart
+sendgrid==6.11.0
