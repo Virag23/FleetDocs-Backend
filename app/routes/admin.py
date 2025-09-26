@@ -64,14 +64,14 @@ def get_admin_payload(authorization: str = Header(...)):
 
 @router.get("/dashboard-stats", tags=["Admin"])
 def dashboard_stats(admin: dict = Depends(get_admin_payload)):
-    pending = db.companies.count_documents({"status": "pending_submission"})
+    pending = db.contact_requests.count_documents({"status": "pending_submission"})
     under_review = db.companies.count_documents({"status": "under_review"})
     waiting_payment = db.companies.count_documents({"status": "waiting_payment"})
     active = db.companies.count_documents({"status": "active"})
     total = db.companies.count_documents({})
 
     recent = []
-    cursor = db.companies.find().sort("submitted_at", -1).limit(5)
+    cursor = db.contact_requests.find({"status": "pending_submission"}).sort("submitted_at", -1).limit(5)
     for c in cursor:
         recent.append({
             "id": str(c["_id"]),
