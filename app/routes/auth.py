@@ -73,7 +73,7 @@ async def verify_login_otp(payload: OTPVerifyRequest):
 
     admin = db.admins.find_one({"$or":[{"username": identifier}, {"email": identifier}]})
     if admin:
-        phone_full = admin["phone"]
+        phone_full = admin["primary_phone"]
         if verify_otp(phone_full if phone_full.startswith("+") else f"+91{phone_full}", code):
             token_data = {
                 "sub": admin["username"],
