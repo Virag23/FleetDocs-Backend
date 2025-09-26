@@ -32,7 +32,7 @@ async def login(payload: LoginRequest):
         if not bcrypt.checkpw(password.encode('utf-8'), admin["password"].encode('utf-8')):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username/email or password")
         
-        phone_full = admin["phone"]
+        phone_full = admin["primary_phone"]
         send_status = send_otp(phone_full if phone_full.startswith("+") else f"+91{phone_full}")
         if send_status not in ("pending", "sent"):
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Unable to send OTP")
