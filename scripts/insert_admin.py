@@ -22,7 +22,7 @@ admin_data = {
     "name": "Virag Nandgaonkar",
     "username": "virag_jain",
     "email": "viragsjain1975@gmail.com",
-    "phone": "9325033281",
+    "primary_phone": "9325033281",
     "password": hashed.decode('utf-8'),
     "role": "admin",
     "created_at": None
