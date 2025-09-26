@@ -302,18 +302,21 @@ def change_admin_password(old_password: str, new_password: str, admin: dict = De
     db.admins.update_one({"username": admin_username}, {"$set": {"password": hashed}})
     return {"message": "Password changed successfully"}
 
-@router.get("/company-requests/{request_id}", tags=["admin"])
-async def get_company_requests(request_id: str, admin: dict = Depends(get_admin_payload)):
+@router.get("/contact-requests", tags=["Admin"])
+def list_contact_requests(status: str = "pending_submission", admin: dict = Depends(get_admin_payload)):
     """
-    Fetches a single contact request by its ID from the contact_requests collection.
+    Fetches a list of contact requests by status, primarily for 'pending_submission'.
     """
-    req = db.contact_requests.find_one({"_id": ObjectId(request_id)})
-    if not req:
-        raise HTTPException(status_code=404, detail="Contact request not found")
+    query = {"status": status}
+    requests_cursor = db.contact_requests.find(query)
     
-    req["id"] = str(req["_id"])
-    del req["_id"] 
-    return req
+    result = []
+    for req in requests_cursor:
+        req["id"] = str(req["_id"])
+        del req["_id"]
+        result.append(req)
+        
+    return result
 
 @router.post("/approve-request/{request_id}", tags=["Admin"])
 def approve_contact_request(request_id: str, admin: dict = Depends(get_admin_payload)):
