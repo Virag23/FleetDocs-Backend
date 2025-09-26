@@ -313,3 +313,24 @@ async def get_company_requests(request_id: str, admin: dict = Depends(get_admin_
     
     req["id"] = str(req["_id"])
     return req
+
+@router.post("/approve-request/{request_id}", tags=["Admin"])
+def approve_contact_request(request_id: str, admin: dict = Depends(get_admin_payload)):
+    """
+    Approves a contact request, creates a new company, and deletes the original request.
+    """
+    req = db.contact_requests.find_one({"_id": ObjectId(request_id)})
+    if not req:
+        raise HTTPException(status_code=404, detail="Contact request not found")
+
+    company_data = req.copy()
+    company_data.pop("_id") # Remove the old ID
+    company_data["status"] = "under_review" # Set the first post-approval status
+
+    result = db.companies.insert_one(company_data)
+
+    if result.inserted_id:
+        db.contact_requests.delete_one({"_id": ObjectId(request_id)})
+        return {"message": "Request approved. Company created and moved to 'Under Review'.", "new_company_id": str(result.inserted_id)}
+    else:
+        raise HTTPException(status_code=500, detail="Failed to create company from request.")
