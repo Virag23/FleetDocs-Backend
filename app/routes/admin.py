@@ -24,13 +24,6 @@ def get_current_admin(authorization: str = Header(...)):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
     return payload
 
-@router.get("/company-requests", tags=["admin"])
-async def get_company_requests(admin: dict = Depends(get_current_admin)):
-    reqs = list(db.companies.find({"status": "pending_submission"}, {"password": 0})) 
-    for r in reqs:
-        r["id"] = str(r["_id"])
-    return {"pending_companies": reqs}
-
 @router.post("/company-approve/{company_id}", tags=["admin"])
 async def approve_company(company_id: str, admin: dict = Depends(get_current_admin)):
     result = db.companies.update_one(
@@ -308,3 +301,15 @@ def change_admin_password(old_password: str, new_password: str, admin: dict = De
     hashed = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt()).decode()
     db.admins.update_one({"username": admin_username}, {"$set": {"password": hashed}})
     return {"message": "Password changed successfully"}
+
+@router.get("/company-requests", tags=["admin"])
+async def get_company_requests(request_id: str, admin: dict = Depends(get_admin_payload)):
+    """
+    Fetches a single contact request by its ID from the contact_requests collection.
+    """
+    req = db.contact_requests.find_one({"_id": ObjectId(request_id)})
+    if not req:
+        raise HTTPException(status_code=404, detail="Contact request not found")
+    
+    req["id"] = str(req["_id"])
+    return req
