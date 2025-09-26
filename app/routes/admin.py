@@ -302,7 +302,7 @@ def change_admin_password(old_password: str, new_password: str, admin: dict = De
     db.admins.update_one({"username": admin_username}, {"$set": {"password": hashed}})
     return {"message": "Password changed successfully"}
 
-@router.get("/company-requests", tags=["admin"])
+@router.get("/company-requests/{request_id}", tags=["admin"])
 async def get_company_requests(request_id: str, admin: dict = Depends(get_admin_payload)):
     """
     Fetches a single contact request by its ID from the contact_requests collection.
