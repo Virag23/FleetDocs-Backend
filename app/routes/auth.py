@@ -98,7 +98,8 @@ async def verify_login_otp(payload: OTPVerifyRequest):
                 "role": "company",
                 "company_id": str(company["_id"]),
                 "name": company["company_name"],
-                "must_change_password": company.get("must_change_password", False) 
+                "must_change_password": company.get("must_change_password", False),
+                "session_key": company.get("session_invalidator", "") 
             }
             token = create_access_token(token_data)
             return {
