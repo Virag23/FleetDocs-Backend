@@ -79,7 +79,7 @@ async def verify_login_otp(payload: OTPVerifyRequest):
                 "sub": admin["username"],
                 "role": "admin",
                 "name": admin["name"],
-                "session_key": company.get("session_invalidator", "") 
+                "session_key": admin.get("session_invalidator", "")
             }
             token = create_access_token(token_data)
             return {
