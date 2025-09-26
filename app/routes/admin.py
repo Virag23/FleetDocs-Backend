@@ -87,27 +87,31 @@ def list_companies(status: str = None, admin: dict = Depends(get_admin_payload))
     query = {}
     if status:
         query["status"] = status
+    
     docs = db.companies.find(query)
-    out = []
-    for c in docs:
-        c_out = CompanyOut(
-            id=str(c["_id"]),
-            company_name=c["company_name"],
-            owner_name=c["owner_name"],
-            email=c["email"],
-            primary_phone=c["primary_phone"],
-            secondary_phones=c.get("secondary_phones", []),
-            address=c.get("address"),
-            logo_url=c.get("logo_url"),
-            status=c.get("status"),
-            submitted_at=c.get("submitted_at"),
-            payment_due_at=c.get("payment_due_at"),
-            payment_reminder_sent=c.get("payment_reminder_sent", False),
-            must_change_password=c.get("must_change_password", False),
-            username=c.get("username")
-        )
-        out.append(c_out.dict())
-    return out
+    output_list = []
+    
+    for company_doc in docs:
+        # Manually build a dictionary instead of using the Pydantic model
+        company_data = {
+            "id": str(company_doc.get("_id")),
+            "company_name": company_doc.get("company_name", ""),
+            "owner_name": company_doc.get("owner_name", ""),
+            "email": company_doc.get("email", ""),
+            "primary_phone": company_doc.get("primary_phone", ""),
+            "secondary_phones": company_doc.get("secondary_phones", []),
+            "address": company_doc.get("address"),
+            "logo_url": company_doc.get("logo_url"),
+            "status": company_doc.get("status", ""),
+            "submitted_at": company_doc.get("submitted_at"),
+            "payment_due_at": company_doc.get("payment_due_at"),
+            "payment_reminder_sent": company_doc.get("payment_reminder_sent", False),
+            "must_change_password": company_doc.get("must_change_password", False),
+            "username": company_doc.get("username")
+        }
+        output_list.append(company_data)
+        
+    return output_list
 
 @router.get("/company/{company_id}", response_model=CompanyOut, tags=["Admin"])
 def get_company(company_id: str, admin: dict = Depends(get_admin_payload)):
