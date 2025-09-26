@@ -312,6 +312,7 @@ async def get_company_requests(request_id: str, admin: dict = Depends(get_admin_
         raise HTTPException(status_code=404, detail="Contact request not found")
     
     req["id"] = str(req["_id"])
+    del req["_id"] 
     return req
 
 @router.post("/approve-request/{request_id}", tags=["Admin"])
