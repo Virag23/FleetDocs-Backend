@@ -82,7 +82,7 @@ def dashboard_stats(admin: dict = Depends(get_admin_payload)):
         "recent_requests": recent
     }
 
-@router.get("/companies", response_model=List[CompanyOut], tags=["Admin"])
+@router.get("/companies", tags=["Admin"])
 def list_companies(status: str = None, admin: dict = Depends(get_admin_payload)):
     query = {}
     if status:
@@ -106,7 +106,7 @@ def list_companies(status: str = None, admin: dict = Depends(get_admin_payload))
             must_change_password=c.get("must_change_password", False),
             username=c.get("username")
         )
-        out.append(c_out)
+        out.append(c_out.dict())
     return out
 
 @router.get("/company/{company_id}", response_model=CompanyOut, tags=["Admin"])
