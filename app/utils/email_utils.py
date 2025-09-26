@@ -75,7 +75,7 @@ def send_contact_confirmation_email(to_email: str, company_name: str):
 
 
 def send_reset_email(to_email: str, token: str, identifier: str, role: str):
-    reset_link = f"http://10.122.235.47:5000/reset-password?token={token}&identifier={identifier}"
+    reset_link = f"https://fleetdocs-backend.onrender.com/reset-password?token={token}&identifier={identifier}"
 
     subject = "FleetDocs — Password Reset Request"
 
