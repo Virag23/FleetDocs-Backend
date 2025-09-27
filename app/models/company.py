@@ -1,7 +1,7 @@
 # app/models/company.py
 
-from pydantic import BaseModel, EmailStr
-from typing import Optional
+from pydantic import BaseModel, EmailStr, Field, constr
+from typing import List, Optional
 from datetime import datetime
 
 class CompanyBase(BaseModel):
@@ -9,26 +9,41 @@ class CompanyBase(BaseModel):
     owner_name: str
     email: EmailStr
     primary_phone: str
-    secondary_phones: Optional[list[str]] = []
+    secondary_phones: Optional[List[str]] = []
     address: Optional[str] = None
     logo_url: Optional[str] = None
-
+    
 class CompanyCreate(CompanyBase):
-    pass 
+    pass
 
-class CompanyOut(CompanyBase):
-    id: str
+class CompanyInDB(CompanyBase):
+    id: str = Field(..., alias="_id")
     status: str
+    username: Optional[str] = None
+    password: Optional[str] = None
     submitted_at: datetime
+    approved_at: Optional[datetime] = None
     payment_due_at: Optional[datetime] = None
-    payment_reminder_sent: Optional[bool] = False
-    must_change_password: Optional[bool] = False
-    onboarding_complete: Optional[bool] = False # <-- ADD THIS FIELD
+    payment_reminder_sent: bool = False
+    must_change_password: bool = False
+    session_invalidator: str = ""
+
+class CompanyOut(BaseModel):
+    id: str
+    company_name: str
+    owner_name: str
+    email: EmailStr
+    primary_phone: str
+    secondary_phones: List[str]
+    address: Optional[str] = None
+    logo_url: Optional[str] = None
+    status: str
+    submitted_at: Optional[datetime] = None
+    payment_due_at: Optional[datetime] = None
+    payment_reminder_sent: bool = False
+    must_change_password: bool = False
     username: Optional[str] = None
 
-class CredentialRequest(BaseModel):
-    amount: float 
-
 class SetCredentialsRequest(BaseModel):
-    username: Optional[str] 
-    password: Optional[str]
+    username: Optional[str] = None
+    password: Optional[str] = None
